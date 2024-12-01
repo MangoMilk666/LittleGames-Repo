@@ -45,16 +45,26 @@ def check_keyup_events(event, ship):
     elif event.key == pygame.K_LEFT:
         ship.moving_left = False
 
-def check_bullet_alien_collisions(setting, screen, ship, aliens, bullets):
+def check_bullet_alien_collisions(setting, screen, stats, sb, ship, aliens, bullets):
     """检查和相应子弹是否击中（碰撞）外群组中的外星人个体"""
     # 若是，删除相应的子弹和外星人（暂定一颗子弹对应一个外星人，见groupcollide 参数）
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+
+    if collisions: # 返回的字典不为空 --> 子弹有打中外星人
+        """遍历字典，确保将每个消灭的外星人的点数都计入得分"""
+        # 字典的key:与外星人碰撞的子弹, value:与子弹碰撞的外星人列表
+        for Aliens in collisions.values():
+            stats.score += setting.alien_points * len(Aliens)
+            sb.prep_score() # 即时将变化的分数渲染成图像显示
 
     # 外星人编组为空（被消灭），删除现有子弹，加快游戏节奏，新建外星人群
     if len(aliens) == 0:
         bullets.empty()
         setting.increase_speed()
         create_fleet(setting, screen, ship, aliens)
+
+
+
 
 def create_alien(setting, screen, aliens, alien_index, row_number):
     # 创建单个，加入当前行
@@ -178,7 +188,7 @@ def update_aliens(setting, stats, screen, ship, aliens, bullets):
                 bullets.remove(bullet)
         print("Bullets left:", len(bullets))
         '''
-def update_bullets(setting, screen, ship, aliens, bullets):
+def update_bullets(setting, screen, stats, sb, ship, aliens, bullets):
     """更新子弹位置
         删除到顶子弹"""
     bullets.update()
@@ -187,7 +197,7 @@ def update_bullets(setting, screen, ship, aliens, bullets):
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
     # 最好定时显示 print("Bullets left:", len(bullets))
-    check_bullet_alien_collisions(setting, screen, ship, aliens, bullets)
+    check_bullet_alien_collisions(setting, screen, stats, sb, ship, aliens, bullets)
 
 '''更新屏幕的代码，整合至GF
         每次循环，背景色填充重绘屏幕
@@ -196,7 +206,7 @@ def update_bullets(setting, screen, ship, aliens, bullets):
         # 使最近绘制的屏幕可见：每次执行，擦除旧屏幕，显示新屏幕
         pygame.display.flip()
         '''
-def update_screen(setting, screen, stats, ship, aliens, bullets, button):
+def update_screen(setting, screen, stats, sb, ship, aliens, bullets, button):
     """更新屏幕图像，切换到新屏幕"""
     # 每次循环，背景色填充重绘屏幕
     screen.fill(setting.bg_color)
@@ -207,6 +217,8 @@ def update_screen(setting, screen, stats, ship, aliens, bullets, button):
     # 编组调用父类继承的draw，自动在屏幕上绘制每个元素，按照元素rect位置
     aliens.draw(screen)
 
+    # 显示得分
+    sb.show_score()
     # 若游戏处于非活动状态，就绘制（Play）按钮
     # 先绘制其他元素，再绘制button，为了使按钮处于最上方
     if not stats.game_active:

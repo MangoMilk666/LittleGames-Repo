@@ -24,3 +24,7 @@ class Settings():
         #小人上升和下降加速度的设置
         self.gravity = 0.7
 
+    def initialize_dynamic_settings(self):
+        """初始化随游戏进行而变化的设置"""
+        pass
+
