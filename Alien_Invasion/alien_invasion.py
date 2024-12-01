@@ -1,5 +1,6 @@
 import pygame
 
+from Button import Button
 from GameStats import GameStats
 from Settings import Settings
 from Ship import Ship
@@ -15,7 +16,6 @@ def run_game():
     screen = pygame.display.set_mode((setting.screen_width,
                                       setting.screen_height))
     ship = Ship(setting, screen)
-    alien = Alien(setting, screen)
 
     # group for bullets and aliens
     bullets = Group()
@@ -28,36 +28,24 @@ def run_game():
     # 创建外星人群
     gf.create_fleet(setting, screen, ship, aliens)
 
+    # 创建Play按钮
+    play_button = Button(setting, screen, "Play")
 
     # 游戏主循环
     while True:
-        ''' 监视键盘和鼠标事件的代码，整合到GF类：
-         for event in pygame.event.get():
-             if event.type == pygame.QUIT:
-                 sys.exit()
-         '''
-        gf.check_events(setting, screen, ship, bullets)
+        # 任何情况下都调用
+        gf.check_events(setting, screen, stats, play_button, ship, aliens, bullets)
 
-        ship.update()
-        '''更新子弹数量和位置代码整合到GF类
-        bullets.update()
-        for bullet in bullets.copy():
-            if bullet.rect.bottom <= 0:
-                bullets.remove(bullet)
-        print("Bullets left:", len(bullets))
-        '''
-        gf.update_bullets(setting, screen, ship, aliens, bullets)
+        if stats.game_active: # 当且仅当游戏处于活动状态下调用
+            ship.update()
 
-        # 更新外星人位置
-        gf.update_aliens(setting, stats, screen, ship, aliens, bullets)
-        '''更新屏幕的代码，整合至GF
-        每次循环，背景色填充重绘屏幕
-        screen.fill(settings.bg_color)
-        ship.blitme()
-        # 使最近绘制的屏幕可见：每次执行，擦除旧屏幕，显示新屏幕
-        pygame.display.flip()
-        '''
-        gf.update_screen(setting, screen, ship, aliens, bullets)
+            gf.update_bullets(setting, screen, ship, aliens, bullets)
+
+            # 更新外星人位置
+            gf.update_aliens(setting, stats, screen, ship, aliens, bullets)
+
+
+        gf.update_screen(setting, screen, stats, ship, aliens, bullets, play_button)
 
 if __name__ == "__main__":
     run_game()
