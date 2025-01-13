@@ -8,6 +8,7 @@ class Doodler:
         self.image = self.image_right
         self.rect = self.image.get_rect()
         self.screen_rect = screen.get_rect()
+        # doodler.rect.bottom - doodler.rect.top == 53
 
         # Start doodler at the bottom center of the screen
         self.rect.centerx = self.screen_rect.centerx
@@ -19,7 +20,8 @@ class Doodler:
         self.moving_right = False
         self.moving_left = False
         self.jumping = False
-        self.jump_speed = self.settings.initial_jumping_speed
+        self.jump_speed = self.settings.initial_jumping_speed_common
+        self.fastFall = False
 
     def update(self):
         """更新小人位置坐标"""
@@ -41,12 +43,14 @@ class Doodler:
         # update self.rect position
         self.rect.bottom = self.bottom
 
-    def jumpAgain(self):
+    def jumpAgain(self, category="green"):
         """Initiate jumping only if the doodler isn't already in the air, but alrady at ground/platform."""
         if not self.jumping:
             self.jumping = True
-            self.jump_speed = self.settings.initial_jumping_speed
-
+            if category == "trampoline" or category == "spring":
+                self.jump_speed = self.settings.initial_jumping_speed_spring
+            else:
+                self.jump_speed = self.settings.initial_jumping_speed_common
     def blitme(self, rect=None):
         if rect: # rect != None
             self.screen.blit(self.image, rect)  # 使用传入的矩形位置
@@ -63,8 +67,6 @@ class Doodler:
             self.jump_speed = 0
             self.jumping = False
 
-
-
     def fallDown(self):
         # y坐标 >= 0, and y不断增大
         # self.jump_speed >= 0
@@ -73,6 +75,9 @@ class Doodler:
         self.jump_speed += self.settings.gravity
         if self.bottom >= self.screen_rect.bottom:
             self.bottom = self.screen_rect.bottom
+
+    def delta_y(self, beforeY):
+        return self.rect.centery - beforeY
 
 
 

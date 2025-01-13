@@ -10,7 +10,7 @@ class Scoreboard:
 
         # 显示得分信息时使用的字体设置
         self.text_color = (30, 30, 30)
-        self.font = pygame.font.SysFont(None, 48)
+        self.font = pygame.font.SysFont("pingfang", 48)
 
         # 准备初始得分及上升高度的图像
         self.prep_score()
@@ -19,7 +19,7 @@ class Scoreboard:
     def prep_score(self):
         """将得分渲染成一幅图像"""
         score_str = str(self.stats.score)
-        self.score_image = self.font.render(score_str, True, self.text_color, self.setting.bg_color)
+        self.score_image = self.font.render(score_str, True, self.text_color, self.setting.bg_color_grey)
 
         # 将得分放在屏幕右上角
         self.score_rect = self.score_image.get_rect()
@@ -28,8 +28,8 @@ class Scoreboard:
 
     def prep_height(self):
         """将上升高度渲染成一幅图像"""
-        height_str = str(self.stats.score)
-        self.height_image = self.font.render(height_str, True, self.text_color, self.setting.bg_color)
+        height_str = str(self.stats.height)
+        self.height_image = self.font.render(height_str, True, self.text_color, self.setting.bg_color_grey)
 
         # 将得分放在屏幕右上角
         self.height_rect = self.height_image.get_rect()
@@ -43,3 +43,6 @@ class Scoreboard:
     def show_height(self):
         """在屏幕上显示得分"""
         self.screen.blit(self.height_image, self.height_rect)
+
+
+

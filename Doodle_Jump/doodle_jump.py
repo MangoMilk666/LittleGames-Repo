@@ -47,17 +47,23 @@ def run():
             # Update doodler's position and movement 更新小人的逻辑位置和rect位置
             doodler.update()
 
-            # 更新摄像机位置，以doodler为中心
-            gf.update_camera(camera, sb, doodler, platforms)
-
             # Update platform and handle doodler-platform collisions
             gf.update_platforms(settings, screen, camera, doodler, platforms)
 
+            # 更新摄像机位置，以doodler为中心
+            gf.update_camera(camera, stats, doodler, platforms)
+
+            # 更新记分板的分数、高度等
+            gf.update_scoreboard(camera, sb, stats)
+
+
+
         # Redraw screen and flip the display
-        gf.update_screen(settings, screen, stats, sb, doodler, platforms, play_button)
+        gf.update_screen(settings, screen, stats, camera, sb, doodler, platforms, play_button)
 
         # Control game frame rate
         settings.clock.tick(settings.FPS)
+
 
 
 
